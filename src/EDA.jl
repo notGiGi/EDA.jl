@@ -1,5 +1,4 @@
-module EDA
-
+module GiGi
 export EDALoader, load, visualize_data, barstackmissing, describedata, dataType, threshold, correlation, heat, outlierswithiqr, outlierhandle, deleteRow, filterColumnsByCorrelation, correlation_network, linear_regression, save_to_csv, linearregression
 
 using CSV, DataFrames, VegaLite, Statistics, Missings, StatsBase, ColorSchemes, Plots, Graphs, GraphPlot, Colors, Flux, CategoricalArrays

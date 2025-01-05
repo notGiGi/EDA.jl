@@ -1,5 +1,5 @@
 using Test
-using EDA  # Importa tu módulo EDA
+using GiGi  # Importa tu módulo EDA
 using DataFrames
 using Plots
 # Datos de prueba
