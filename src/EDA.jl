@@ -205,24 +205,27 @@ Example:
 
 # Filtrar datos por umbral de faltantes
 function threshold(loader::EDALoader, threshold::Float64; keep_columns::Vector{String} = String[])
+    # Asegurar que el caché esté actualizado
     update_cache!(loader)
-    totdata = loader.cache[:missingdataframe]
 
-    # Calcular el porcentaje de valores faltantes si no está en el DataFrame
+    # Calcular el porcentaje de valores faltantes por columna
+    totdata = loader.cache[:missingdataframe]
     if :Percentage_of_missing_data ∉ names(totdata)
-        totdata[!, :Percentage_of_missing_data] = round.((totdata[!, :Numbermissing] ./ loader.cache[:n]) .* 100, digits=1)
-        loader.cache[:missingdataframe] = totdata  # Actualizar el caché con la nueva columna
+        totdata[!, :Percentage_of_missing_data] = (totdata[!, :Numbermissing] ./ loader.cache[:n]) .* 100
     end
 
-    # Filtrar columnas con porcentaje de faltantes mayor al umbral
-    mask = totdata[!, :Percentage_of_missing_data] .> threshold
-    columns_to_keep = vcat(totdata[.!mask, :Name], keep_columns) |> unique
+    # Seleccionar columnas que cumplen con el umbral
+    mask = totdata[!, :Percentage_of_missing_data] .<= threshold
+    columns_to_keep = vcat(totdata[mask, :Name], keep_columns) |> unique
 
-    # Actualizar el DataFrame manteniendo solo las columnas seleccionadas
+    # Filtrar el DataFrame según las columnas seleccionadas
     loader.data = select(loader.data, intersect(names(loader.data), columns_to_keep))
+    
+    # Actualizar el caché después de filtrar
     update_cache!(loader)
     return loader.data
 end
+
 
 """
 Computes the correlation matrix for all numeric columns in the DataFrame.
