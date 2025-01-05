@@ -1,9 +1,9 @@
-# Exploratory Data Analysis
+# GiGi
 
 [![Build Status](https://github.com/notGiGi/EDA.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/notGiGi/EDA.jl/actions/workflows/CI.yml?query=branch%3Amain)
 
 
-**EDA.jl** is a powerful and comprehensive Julia package designed to streamline exploratory data analysis (EDA). This package equips data analysts, scientists, and researchers with tools to effortlessly clean, analyze, and visualize data, enabling insightful decision-making and robust analyses.
+**GiGi** is a powerful and comprehensive Julia package designed to streamline exploratory data analysis (EDA). This package equips data analysts, scientists, and researchers with tools to effortlessly clean, analyze, and visualize data, enabling insightful decision-making and robust analyses.
 
 ## Key Features
 
@@ -32,9 +32,9 @@
 
 ---
 
-## Why Choose EDA.jl?
+## Why Choose GiGi?
 
-EDA.jl simplifies the data analysis workflow, enabling users to focus on extracting insights rather than grappling with tedious preprocessing. Its intuitive functions and comprehensive toolkit make it the ideal companion for data exploration tasks in Julia.
+GiGi simplifies the data analysis workflow, enabling users to focus on extracting insights rather than grappling with tedious preprocessing. Its intuitive functions and comprehensive toolkit make it the ideal companion for data exploration tasks in Julia.
 
 Whether you are working on small-scale projects or handling large datasets, EDA.jl adapts to your needs with its modular design and high-performance capabilities.
 
@@ -45,7 +45,7 @@ Whether you are working on small-scale projects or handling large datasets, EDA.
 ### Load and Explore Data
 
 ```julia
-using EDA
+using GiGi
 using DataFrames
 
 # Sample data
