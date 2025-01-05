@@ -1,7 +1,7 @@
 name = "EDA"
 uuid = "b2da3285-ee56-486b-95f3-9dc7b9d1c35a"
 authors = ["Tuffit"]
-version = "1.0.0-DEV"
+version = "1.0.0"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
