@@ -1,45 +1,71 @@
-name: CI
+name: Continuous Integration
 
 on:
   push:
     branches:
-      - main
-    tags: ['*']
-  pull_request:
-  workflow_dispatch:
+      - main  # Ejecuta el workflow en la rama principal
+    tags: ['*']  # Ejecuta también en cualquier etiqueta
+  pull_request:  # Ejecuta el workflow para pull requests
+  workflow_dispatch:  # Permite ejecutar el workflow manualmente
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+  cancel-in-progress: true  # Cancela ejecuciones en progreso si hay una nueva
 
 jobs:
   test:
-    name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }}
+    name: Julia CI - ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60
-    permissions: 
-      actions: write
+    timeout-minutes: 30
+    permissions:
+      actions: write  # Requerido para eliminar caches antiguas
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         version:
-          - '1.11'
-          - 'pre'
+          - '1.6'  # LTS
+          - '1.11'  # Última versión estable
+          - 'nightly'  # Pre-lanzamiento
         os:
           - ubuntu-latest
         arch:
           - x64
     steps:
+      # Clona el repositorio
       - uses: actions/checkout@v4
+      
+      # Configura Julia
       - uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
+      
+      # Usa cache para precompilar dependencias
       - uses: julia-actions/cache@v2
+
+      # Construye el paquete
       - uses: julia-actions/julia-buildpkg@v1
-      - uses: julia-actions/julia-runtest@v1
+
+      # Ejecuta pruebas con cobertura
+      - name: Run tests with coverage
+        run: julia --project=. -e 'using Pkg; Pkg.test(coverage=true)'
+
+      # Subir cobertura de código a Codecov
       - name: Upload coverage to Codecov
-        run: julia --project=. -e 'using Pkg; Pkg.test(coverage=true);'
+        if: matrix.os == 'ubuntu-latest' && matrix.arch == 'x64'
+        run: julia --project=. -e 'using Coverage; Codecov.submit(process_folder())'
+
+  format:
+    name: Julia Code Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.11'
+      - name: Run JuliaFormatter
+        run: julia --project=. -e 'using JuliaFormatter; format(".")'
+
 
     
