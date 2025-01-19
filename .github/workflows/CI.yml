@@ -3,14 +3,14 @@ name: Continuous Integration
 on:
   push:
     branches:
-      - main  # Ejecuta el workflow en la rama principal
-    tags: ['*']  # Ejecuta también en cualquier etiqueta
-  pull_request:  # Ejecuta el workflow para pull requests
-  workflow_dispatch:  # Permite ejecutar el workflow manualmente
+      - main
+    tags: ['*']
+  pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true  # Cancela ejecuciones en progreso si hay una nueva
+  cancel-in-progress: true
 
 jobs:
   test:
@@ -18,40 +18,30 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     permissions:
-      actions: write  # Requerido para eliminar caches antiguas
+      actions: write
       contents: read
     strategy:
       fail-fast: true
       matrix:
         version:
-          - '1.6'  # LTS
-          - '1.11'  # Última versión estable
-          - 'nightly'  # Pre-lanzamiento
+          - '1.11'
+          - 'nightly'
         os:
           - ubuntu-latest
         arch:
           - x64
     steps:
-      # Clona el repositorio
       - uses: actions/checkout@v4
-      
-      # Configura Julia
       - uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
-      
-      # Usa cache para precompilar dependencias
       - uses: julia-actions/cache@v2
-
-      # Construye el paquete
       - uses: julia-actions/julia-buildpkg@v1
-
-      # Ejecuta pruebas con cobertura
+      - name: Check installed versions
+        run: julia --project=. -e 'using Pkg; Pkg.status()'
       - name: Run tests with coverage
         run: julia --project=. -e 'using Pkg; Pkg.test(coverage=true)'
-
-      # Subir cobertura de código a Codecov
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest' && matrix.arch == 'x64'
         run: julia --project=. -e 'using Coverage; Codecov.submit(process_folder())'
@@ -64,8 +54,9 @@ jobs:
       - uses: julia-actions/setup-julia@v2
         with:
           version: '1.11'
+      - name: Install dependencies
+        run: julia --project=. -e 'using Pkg; Pkg.instantiate()'
+      - name: Check installed versions
+        run: julia --project=. -e 'using Pkg; Pkg.status()'
       - name: Run JuliaFormatter
         run: julia --project=. -e 'using JuliaFormatter; format(".")'
-
-
-    
